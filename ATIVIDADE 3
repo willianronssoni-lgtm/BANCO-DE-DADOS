@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS alunos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50),
+    idade INT);
+
+TRUNCATE TABLE alunos;
+INSERT INTO alunos (nome, idade) VALUES 
+('ORESTES PINTO', 17),
+('Olegário DA COSTA', 8),
+('Zulmira RIBEIRO', 100),
+('Etelvina PINHEIRO', 150);
+
+DROP PROCEDURE IF EXISTS buscar_alunos_por_idade;
+DELIMITER //
+CREATE PROCEDURE buscar_alunos_por_idade(IN idade_minima INT)
+BEGIN
+    SELECT id, nome, idade 
+    FROM alunos 
+    WHERE idade >= idade_minima;
+END //
+DELIMITER ;
+
+CALL buscar_alunos_por_idade(18);
