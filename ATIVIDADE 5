@@ -1,0 +1,45 @@
+CREATE TABLE IF NOT EXISTS alunos_boletim (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(50),
+    nota1 DECIMAL(4,2),
+    nota2 DECIMAL(4,2)
+);
+
+TRUNCATE TABLE alunos_boletim;
+INSERT INTO alunos_boletim (id, nome, nota1, nota2) VALUES 
+(1, 'Rodrigo Mello', 8.5, 6.5),  -- Média 7.5 (Aprovado)
+(2, 'Camila Rocha', 4.0, 5.0),   -- Média 4.5 (Recuperação)
+(3, 'Pedro Santos', 3.0, 2.0);   -- Média 2.5 (Reprovado)
+
+DROP PROCEDURE IF EXISTS mostrar_situacao;
+DROP FUNCTION IF EXISTS calcular_media;
+
+DELIMITER //
+
+CREATE FUNCTION calcular_media(n1 DECIMAL(4,2), n2 DECIMAL(4,2))
+RETURNS DECIMAL(4,2)
+DETERMINISTIC
+BEGIN
+    RETURN (n1 + n2) / 2;
+END //
+
+CREATE PROCEDURE mostrar_situacao(IN aluno_id INT)
+BEGIN
+    SELECT 
+        nome,
+        nota1,
+        nota2,
+        calcular_media(nota1, nota2) AS media,
+        CASE 
+            WHEN calcular_media(nota1, nota2) >= 6.0 THEN 'Aprovado'
+            WHEN calcular_media(nota1, nota2) >= 4.0 THEN 'Recuperação'
+            ELSE 'Reprovado'
+        END AS situacao
+    FROM alunos_boletim
+    WHERE id = aluno_id;
+END //
+
+DELIMITER ;
+
+CALL mostrar_situacao(1);
+CALL mostrar_situacao(2);
